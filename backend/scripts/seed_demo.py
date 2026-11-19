@@ -10,6 +10,7 @@ ORIGINAL="SELECT DISTINCT i.customer, (SELECT SUM(j.amount) FROM invoices j WHER
 def seed():
     Base.metadata.create_all(engine)
     with engine.begin() as conn:
+        conn.execute(text("ALTER TABLE batches ADD COLUMN IF NOT EXISTS attribution BOOLEAN NOT NULL DEFAULT FALSE"))
         conn.execute(text("CREATE TABLE IF NOT EXISTS invoices (invoice_id INTEGER PRIMARY KEY, customer TEXT NOT NULL, route TEXT NOT NULL, amount NUMERIC(12,2) NOT NULL, temperature NUMERIC(4,1) NOT NULL, status TEXT NOT NULL)"))
         conn.execute(text("DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='query_reader') THEN CREATE ROLE query_reader NOLOGIN; END IF; END $$"))
         conn.execute(text('GRANT SELECT ON invoices TO query_reader'))
